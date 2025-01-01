@@ -9,7 +9,6 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.result.contract.ActivityResultContracts.RequestPermission
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.Button
 import androidx.compose.material3.Scaffold
@@ -18,14 +17,27 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import com.example.qr_reader_sample.ui.theme.QrreadersampleTheme
 import com.google.zxing.integration.android.IntentIntegrator
 
 class MainActivity : ComponentActivity() {
+    private val CAMERA_PERMISSION_REQUEST_CODE = 100
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+        // カメラの権限が許可されているか確認
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+            != PackageManager.PERMISSION_GRANTED) {
+
+            // 許可されていなければ、許可をリクエスト
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE
+            )
+        }
 
         setContent {
             QrreadersampleTheme {
@@ -54,35 +66,25 @@ class MainActivity : ComponentActivity() {
         integrator.initiateScan()                                     // スキャナーを起動
     }
 
-    // カメラの権限を確認してスキャナーを起動
-    private fun checkAndRequestCameraPermission() {
-        when {
-            ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                // 権限が許可されている場合、スキャナーを起動
-                startQrCodeScanner()
+    // 権限リクエストの結果を処理
+    @Deprecated("Deprecated in Java")
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+        if (requestCode == CAMERA_PERMISSION_REQUEST_CODE) {
+            if (grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // 許可された場合
+                Toast.makeText(this, "カメラの権限が許可されました", Toast.LENGTH_SHORT).show()
+            } else {
+                // メッセージボックス
+                AlertDialog.Builder(this)
+                    .setTitle("情報")
+                    .setMessage("本アプリはカメラの権限が必須です。権限を付与してください。")
+                    .setCancelable(false) // ユーザーがダイアログを閉じられないようにする
+                    .setPositiveButton("OK") { _, _ ->
+                        finish() // アクティビティを終了
+                    }
+                    .show()
             }
-
-            shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
-                // 権限が拒否されている場合、説明を表示
-                Toast.makeText(this, "カメラの権限が必要です", Toast.LENGTH_SHORT).show()
-            }
-
-            else -> {
-                // 権限をリクエスト
-                requestPermissionLauncher.launch(Manifest.permission.CAMERA)
-            }
-        }
-    }
-
-    // 権限リクエストのコールバック
-    private val requestPermissionLauncher = registerForActivityResult(RequestPermission()) { isGranted ->
-        if (isGranted) {
-            startQrCodeScanner()
-        } else {
-            Toast.makeText(this, "カメラの権限が必要です", Toast.LENGTH_SHORT).show()
         }
     }
 
@@ -110,7 +112,7 @@ class MainActivity : ComponentActivity() {
     @Composable
     fun QrCodeReader(modifier: Modifier = Modifier) {
         Button(
-            onClick = { checkAndRequestCameraPermission() },
+            onClick = { startQrCodeScanner() },
             modifier = modifier
         ) {
             Text("QRコード読み取り")
