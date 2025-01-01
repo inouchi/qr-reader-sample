@@ -45,7 +45,7 @@ class MainActivity : ComponentActivity() {
     // QRコードスキャナーを起動
     private fun startQrCodeScanner() {
         val integrator = IntentIntegrator(this)
-        integrator.setOrientationLocked(false)                        // 縦画面に固定
+        integrator.setOrientationLocked(true)                         // 縦画面に固定
         integrator.setDesiredBarcodeFormats(IntentIntegrator.QR_CODE) // QRコードのみスキャン対象
         integrator.setPrompt("QRコードを読み取ってください。")             // プロンプトメッセージ
         integrator.setCameraId(0)                                     // 背面カメラ
