@@ -29,15 +29,15 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
 
         // カメラの権限が許可されているか確認
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
-            != PackageManager.PERMISSION_GRANTED) {
-
-            // 許可されていなければ、許可をリクエスト
-            ActivityCompat.requestPermissions(
-                this,
-                arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE
-            )
-        }
+//        if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA)
+//            != PackageManager.PERMISSION_GRANTED) {
+//
+//            // 許可されていなければ、許可をリクエスト
+//            ActivityCompat.requestPermissions(
+//                this,
+//                arrayOf(Manifest.permission.CAMERA), CAMERA_PERMISSION_REQUEST_CODE
+//            )
+//        }
 
         setContent {
             QrreadersampleTheme {
@@ -109,10 +109,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    fun moveQrCodeScannerView() {
+        val intent = Intent(this, QrCodeScannerActivity::class.java)
+        startActivity(intent)  // QrCodeCaptureActivityに遷移
+    }
+
     @Composable
     fun QrCodeReader(modifier: Modifier = Modifier) {
         Button(
-            onClick = { startQrCodeScanner() },
+            onClick = { moveQrCodeScannerView() },
             modifier = modifier
         ) {
             Text("QRコード読み取り")

@@ -30,10 +30,14 @@
         </activity>
 
         <activity
-            android:screenOrientation="fullSensor"
-            tools:replace="screenOrientation"
-            android:name="com.journeyapps.barcodescanner.CaptureActivity">
+            android:name=".QrCodeScannerActivity"
+            android:exported="false">
         </activity>
+
+        <activity
+            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:screenOrientation="fullSensor"
+            tools:replace="screenOrientation" />
     </application>
 
 </manifest>
