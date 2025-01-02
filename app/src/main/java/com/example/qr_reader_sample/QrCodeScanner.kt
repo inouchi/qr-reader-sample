@@ -41,6 +41,7 @@ class QrCodeScanner(
             .build()
     )
     private val analyzer: CodeAnalyzer = CodeAnalyzer(scanner, callback)
+    private var cameraProvider: ProcessCameraProvider? = null
 
     init {
         // アクティビティのライフサイクルに基づいてリソースを管理
@@ -59,8 +60,16 @@ class QrCodeScanner(
     fun start() {
         val future = ProcessCameraProvider.getInstance(activity)
         future.addListener({
-            setUpCamera(future.get())
+            cameraProvider = future.get()
+            setUpCamera(cameraProvider!!)
         }, ContextCompat.getMainExecutor(activity))
+    }
+
+    /**
+     * QRコードのスキャンを停止
+     */
+    fun stop() {
+        cameraProvider?.unbindAll()
     }
 
     /**

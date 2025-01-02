@@ -133,9 +133,27 @@ class QrCodeScannerActivity : ComponentActivity() {
      * @param codes 検出されたQRコードのリスト
      */
     private fun onDetectCode(codes: List<Barcode>) {
-        codes.forEach {
-            Log.d("QRCode", "スキャン結果: ${it.rawValue}")
+        if (codes.isEmpty()) {
+            return
         }
+
+        // QRコードスキャンを一時停止
+        codeScanner.stop()
+
+        // リストの最初の要素を処理
+        val firstCode = codes.first()
+        Log.d("QRCode", "スキャン結果: ${firstCode.rawValue}")
+
+        // メッセージボックス（AlertDialog）を表示
+        AlertDialog.Builder(this)
+            .setTitle("読み取り結果")
+            .setMessage(firstCode.rawValue)
+            .setPositiveButton("OK") { _, _ ->
+                // メッセージボックス確認後、QRコードスキャンを再開
+                codeScanner.start()
+            }
+            .setCancelable(false) // ユーザーが外側をタップして閉じないようにする
+            .show()
     }
 
     companion object {
