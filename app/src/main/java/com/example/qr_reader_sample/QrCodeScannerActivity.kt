@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.pm.PackageManager
+import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
 import android.widget.LinearLayout
@@ -140,6 +141,9 @@ class QrCodeScannerActivity : ComponentActivity() {
         // QRコードスキャンを一時停止
         codeScanner.stop()
 
+        // 読み取り音を鳴らす
+        playSound()
+
         // リストの最初の要素を処理
         val firstCode = codes.first()
         Log.d("QRCode", "スキャン結果: ${firstCode.rawValue}")
@@ -154,6 +158,15 @@ class QrCodeScannerActivity : ComponentActivity() {
             }
             .setCancelable(false) // ユーザーが外側をタップして閉じないようにする
             .show()
+    }
+
+    /**
+     * 音を鳴らす
+     */
+    private fun playSound() {
+        val mediaPlayer = MediaPlayer.create(this, R.raw.scan) // `beep_sound.mp3` を res/raw に配置
+        mediaPlayer.setOnCompletionListener { it.release() } // 再生完了後リソースを解放
+        mediaPlayer.start()
     }
 
     companion object {
