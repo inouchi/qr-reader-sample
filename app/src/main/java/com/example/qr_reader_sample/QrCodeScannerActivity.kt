@@ -1,27 +1,31 @@
 package com.example.qr_reader_sample
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.util.Log
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.activity.ComponentActivity
+import androidx.camera.view.PreviewView
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import com.example.qr_reader_sample.databinding.ActivityQrCodeScannerBinding
 import com.google.mlkit.vision.barcode.common.Barcode
 
 /**
  * QRコードスキャン画面のアクティビティ
  */
 class QrCodeScannerActivity : ComponentActivity() {
-    private lateinit var binding: ActivityQrCodeScannerBinding
+    private lateinit var previewView: PreviewView
     private lateinit var codeScanner: QrCodeScanner
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         checkAndRequestCameraPermission()
-        initialize()
+        initializeUI()
+        initializeScanner()
     }
 
     /**
@@ -72,15 +76,54 @@ class QrCodeScannerActivity : ComponentActivity() {
     }
 
     /**
-     * アクティビティの初期化処理
+     * UIを初期化
      */
-    private fun initialize() {
-        // 画面の初期化
-        binding = ActivityQrCodeScannerBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    @SuppressLint("SetTextI18n")
+    private fun initializeUI() {
+        // 親のリニアレイアウトを作成
+        val linearLayout = LinearLayout(this).apply {
+            orientation = LinearLayout.VERTICAL
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.MATCH_PARENT
+            )
+        }
 
-        // スキャナーの初期化とスキャン開始
-        codeScanner = QrCodeScanner(this, binding.previewView, ::onDetectCode)
+        // 上部のテキストビュー (2割)
+        val textView = TextView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                3f // 高さの重み
+            )
+            text = "端末登録QRコードを\n読み取ってください"
+            textSize = 20f
+            textAlignment = TextView.TEXT_ALIGNMENT_CENTER
+            setPadding(0, 50, 0, 50)
+        }
+
+        // 下部のPreviewView (8割)
+        previewView = PreviewView(this).apply {
+            layoutParams = LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.MATCH_PARENT,
+                0,
+                7f // 高さの重み
+            )
+        }
+
+        // リニアレイアウトにビューを追加
+        linearLayout.addView(textView)
+        linearLayout.addView(previewView)
+
+        // レイアウトをアクティビティに設定
+        setContentView(linearLayout)
+    }
+
+    /**
+     * スキャナーの初期化
+     */
+    private fun initializeScanner() {
+        codeScanner = QrCodeScanner(this, previewView, ::onDetectCode)
         codeScanner.start()
     }
 
