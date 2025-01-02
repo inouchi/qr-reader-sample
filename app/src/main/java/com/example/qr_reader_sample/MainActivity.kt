@@ -12,6 +12,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.example.qr_reader_sample.ui.theme.QrreadersampleTheme
 
 class MainActivity : ComponentActivity() {
@@ -26,6 +28,7 @@ class MainActivity : ComponentActivity() {
                         QrCodeReader(
                             modifier = Modifier
                                 .align(Alignment.Center)
+                                .height(50.dp)
                                 .padding(innerPadding) // Apply the innerPadding to the button
                         )
                     }
@@ -45,7 +48,7 @@ class MainActivity : ComponentActivity() {
             onClick = { moveQrCodeScannerView() },
             modifier = modifier
         ) {
-            Text("QRコード読み取り")
+            Text("QRコード読み取り", fontSize = 20.sp)
         }
     }
 }

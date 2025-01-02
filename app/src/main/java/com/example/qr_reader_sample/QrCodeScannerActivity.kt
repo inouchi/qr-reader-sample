@@ -97,7 +97,7 @@ class QrCodeScannerActivity : ComponentActivity() {
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 200
             )
-            text = "端末登録QRコードを\n読み取ってください"
+            text = "QRコードを\n読み取ってください。"
             textSize = 20f
             textAlignment = TextView.TEXT_ALIGNMENT_CENTER
             gravity = Gravity.CENTER // TextView内の文字を上下中央に配置
