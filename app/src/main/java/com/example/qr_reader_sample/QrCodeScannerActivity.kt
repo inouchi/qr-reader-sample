@@ -7,6 +7,7 @@ import android.content.pm.PackageManager
 import android.media.MediaPlayer
 import android.os.Bundle
 import android.util.Log
+import android.view.Gravity
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.activity.ComponentActivity
@@ -90,25 +91,24 @@ class QrCodeScannerActivity : ComponentActivity() {
             )
         }
 
-        // 上部のテキストビュー (2割)
+        // 上部のテキストビュー (高さ200px)
         val textView = TextView(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
-                0,
-                3f // 高さの重み
+                200
             )
             text = "端末登録QRコードを\n読み取ってください"
             textSize = 20f
             textAlignment = TextView.TEXT_ALIGNMENT_CENTER
-            setPadding(0, 50, 0, 50)
+            gravity = Gravity.CENTER // TextView内の文字を上下中央に配置
         }
 
-        // 下部のPreviewView (8割)
+        // 下部のPreviewView (残りのスペース)
         previewView = PreviewView(this).apply {
             layoutParams = LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 0,
-                7f // 高さの重み
+                1f // 残りのスペースを占める
             )
         }
 
