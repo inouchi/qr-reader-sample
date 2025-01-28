@@ -24,13 +24,20 @@ class QrCodeScanner(private val onQrCodeDetected: (String) -> Unit) : ImageAnaly
                 .build()
         )
 
-    @OptIn(ExperimentalGetImage::class) // 画像を取得するためにOptInを指定
-    override fun analyze(imageProxy: ImageProxy) {
-        imageProxy.image?.let { mediaImage -> // 画像が存在する場合のみ処理を実行
-            // InputImageに変換
-            val inputImage =
-                InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+        @OptIn(ExperimentalGetImage::class) // 画像を取得するためにOptInを指定
+        override fun analyze(imageProxy: ImageProxy) {
+            // 画像データの取得
+            val image = imageProxy.image
 
+            // 画像が取得できない場合はプロキシを閉じる
+            if (image == null) {
+                imageProxy.close()
+                return
+            }
+
+            // 取得した画像データをML Kitに渡すためのInputImageオブジェクトに変換
+            val inputImage = InputImage.fromMediaImage(image, imageProxy.imageInfo.rotationDegrees)
+            
             // QRコードのスキャン処理
             scanner
                 .process(inputImage)
@@ -47,6 +54,5 @@ class QrCodeScanner(private val onQrCodeDetected: (String) -> Unit) : ImageAnaly
                     // 処理が完了したらimageProxyを閉じる
                     imageProxy.close()
                 }
-        } ?: imageProxy.close() // 画像がnullの場合はimageProxyを閉じる
-    }
+        }
 }
